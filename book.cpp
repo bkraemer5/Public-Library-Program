@@ -2,7 +2,7 @@
 #include <string>
 
 Book :: Book() {
-  bookID = 000;
+  bookID = 0;
   title = "";
   author = "";
   category = "";

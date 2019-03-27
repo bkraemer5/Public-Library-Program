@@ -5,6 +5,7 @@
 #include "person.cpp"
 #include "book.cpp"
 #include <vector>
+#include <fstream>
 
 using namespace std;
 
@@ -23,16 +24,18 @@ int main() {
   ifstream bookFile;
   bookFile.open("books.txt");
   int bookNum;
+  string intline;
   string bookTitle;
   string bookAuthor;
   string bookCategory;
-  string line;
+  string line1;
   while(!bookFile.eof()) {
-    getline(bookFile, bookNum);
+    bookFile >> bookNum;
+    getline(bookFile, intline);
     getline(bookFile, bookTitle);
     getline(bookFile, bookAuthor);
     getline(bookFile, bookCategory);
-    getline(bookFile, line);
+    getline(bookFile, line1);
     books.emplace_back(new Book(bookNum, bookTitle, bookAuthor, bookCategory));
   }
   bookFile.close();
@@ -43,13 +46,13 @@ int main() {
   string cardStatus;
   string cardFirstName;
   string cardLastName;
-  string line;
+  string line2;
   while (!personFile.eof()) {
     personFile >> cardNum;
     personFile >> cardStatus;
     personFile >> cardFirstName;
     personFile >> cardLastName;
-    getLine(personFile, line);
+    getline(personFile, line2);
     cardholders.emplace_back(new Person(cardNum, cardStatus, cardFirstName, cardLastName));
   }
   return 0;

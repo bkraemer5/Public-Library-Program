@@ -1,8 +1,8 @@
 #include "person.h"
 #include <string>
 
-Person :: Person {
-  id = 00000000;
+Person :: Person() {
+  id = 0;
   status = "Inactive";
   firstName = "";
   lastName = "";

@@ -1,6 +1,8 @@
 #ifndef BOOK_H
 #define BOOK_H
 #include <string>
+
+using namespace std;
 class Book {
 
   private:
@@ -10,7 +12,7 @@ class Book {
     string category;
   public:
     Book();
-    Book(int, string, string, string);
+    Book(int id, string t, string a, string c);
 
 };
 

@@ -2,6 +2,7 @@
 #define PERSON_H
 #include <string>
 
+using namespace std;
 class Person {
 
   private:
@@ -11,7 +12,7 @@ class Person {
     string lastName;
   public:
     Person();
-    Person(int, string, string, string);
+    Person(int i, string s, string fname, string lname);
 
 };
 
