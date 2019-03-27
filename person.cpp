@@ -14,3 +14,24 @@ Person :: Person(int i, string s, string fname, string lname) {
   firstName = fname;
   lastName = lname;
 }
+
+string Person :: fullName() {
+  string full = firstName + " " + lastName;
+  return full;
+}
+
+int Person :: getID() {
+  return id;
+}
+
+string Person :: getStatus() {
+  return status;
+}
+
+string Person :: getFirstName() {
+  return firstName;
+}
+
+string Person :: getLastName() {
+  return lastName;
+}

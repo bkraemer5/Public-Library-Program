@@ -13,6 +13,11 @@ class Person {
   public:
     Person();
     Person(int i, string s, string fname, string lname);
+    string fullName();
+    int getID();
+    string getStatus();
+    string getFirstName();
+    string getLastName();
 
 };
 

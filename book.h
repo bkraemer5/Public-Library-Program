@@ -10,9 +10,16 @@ class Book {
     string title;
     string author;
     string category;
+    bool available;
   public:
     Book();
     Book(int id, string t, string a, string c);
+    int getBookID();
+    string getTitle();
+    string getAuthor();
+    string getCategory();
+    void setAvailable(bool a);
+    bool isAvailable();
 
 };
 
