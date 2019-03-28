@@ -2,15 +2,15 @@
 #include <string>
 
 Person :: Person() {
-  id = 0;
-  status = "Inactive";
+  cardID = 0;
+  active = false;
   firstName = "";
   lastName = "";
 }
 
-Person :: Person(int i, string s, string fname, string lname) {
-  id = i;
-  status = s;
+Person :: Person(int id, bool act, string fname, string lname) {
+  cardID = id;
+  active = act;
   firstName = fname;
   lastName = lname;
 }
@@ -21,11 +21,15 @@ string Person :: fullName() {
 }
 
 int Person :: getID() {
-  return id;
+  return cardID;
 }
 
-string Person :: getStatus() {
-  return status;
+bool Person :: isActive() {
+  return active;
+}
+
+void Person :: setActive(bool a) {
+  active = a;
 }
 
 string Person :: getFirstName() {

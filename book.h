@@ -10,7 +10,7 @@ class Book {
     string title;
     string author;
     string category;
-    bool available;
+    Person *personPtr = nullptr;
   public:
     Book();
     Book(int id, string t, string a, string c);
@@ -18,8 +18,8 @@ class Book {
     string getTitle();
     string getAuthor();
     string getCategory();
-    void setAvailable(bool a);
-    bool isAvailable();
+    void setPersonPtr(Person * ptr);
+    Person* getPersonPtr();
 
 };
 

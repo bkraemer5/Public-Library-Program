@@ -6,16 +6,17 @@ using namespace std;
 class Person {
 
   private:
-    int id;
-    string status;
+    int cardID;
+    bool active;
     string firstName;
     string lastName;
   public:
     Person();
-    Person(int i, string s, string fname, string lname);
+    Person(int id, bool act, string fname, string lname);
     string fullName();
     int getID();
-    string getStatus();
+    void setActive(bool a);
+    bool isActive();
     string getFirstName();
     string getLastName();
 

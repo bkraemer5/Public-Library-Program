@@ -13,7 +13,6 @@ Book :: Book(int id, string t, string a, string c) {
   title = t;
   author = a;
   category = c;
-  available = true;
 }
 
 int Book :: getBookID() {
@@ -32,10 +31,10 @@ string Book :: getCategory() {
   return category;
 }
 
-void Book :: setAvailable(bool a) {
-  available = a;
-} 
+void Book :: setPersonPtr(Person * ptr) {
+  personPtr = ptr;
+}
 
-bool Book :: isAvailable() {
-  return available;
+Person* Book :: getPersonPtr() {
+  return personPtr;
 }
