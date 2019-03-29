@@ -10,12 +10,13 @@
 using namespace std;
 
 void printMenu();
-void bookCheckout(vector<Book *>, vector<Person *>);
-void bookReturn(vector<Book *>);
-void viewAvailable(vector<Book *>);
-void viewBookRentals(vector<Book *>, vector<Person *>);
-void viewCardholderRentals(vector<Book *>, vector<Person *>);
-//void openNewCardholder(vector<Person *>);
+void bookCheckout(vector<Book *> &b, vector<Person *> &p);
+void bookReturn(vector<Book *> &b);
+void viewAvailable(vector<Book *> &b);
+void viewBookRentals(vector<Book *> &b);
+void viewCardholderRentals(vector<Book *> &b, vector<Person *> &p);
+void openNewCardholder(vector<Person *> &p);
+void closeLibraryCard(vector<Book *> &b, vector<Person *> &p);
 
 int main() {
 
@@ -49,8 +50,7 @@ int main() {
   string cardFirstName;
   string cardLastName;
   string line2;
-  while (!personFile.eof()) {
-    personFile >> cardNum;
+  while (personFile >> cardNum) {
     personFile >> cardStatus;
     personFile >> cardFirstName;
     personFile >> cardLastName;
@@ -63,6 +63,8 @@ int main() {
     }
     cardholders.emplace_back(new Person(cardNum, act, cardFirstName, cardLastName));
   }
+  personFile.close();
+
   int choice;
   do {
     printMenu();
@@ -78,16 +80,37 @@ int main() {
           viewAvailable(books);
           break;
       case 4:
-          viewBookRentals(books, cardholders);
+          viewBookRentals(books);
           break;
       case 5:
           viewCardholderRentals(books, cardholders);
           break;
       case 6:
+          openNewCardholder(cardholders);
           break;
       case 7:
+           closeLibraryCard(books, cardholders);
           break;
       case 8:
+          ofstream outRentals;
+          outRentals.open("rentals.txt");
+          for (int i = 0; i < books.size(); i++) {
+            if (books[i]->getPersonPtr() != nullptr) {
+              outRentals << books[i]->getBookID() << " " << books[i]->getPersonPtr()->getID() << endl;
+            }
+          }
+          outRentals.close();
+          ofstream outPersons;
+          outPersons.open("persons.txt");
+          for (int i = 0; i < cardholders.size(); i++) {
+            if (cardholders[i]->isActive() == true) {
+              outPersons << cardholders[i]->getID() << " Active " << cardholders[i]->fullName() << endl;
+            }
+            else {
+              outPersons << cardholders[i]->getID() << " Inactive " << cardholders[i]->fullName() << endl;
+            }
+          }
+          outPersons.close();
           break;
     }
   } while (choice != 8);
@@ -107,7 +130,7 @@ void printMenu() {
 }
 
 // allows the user to check out a book by entering in the cardholder's ID and the books ID. 
-void bookCheckout(vector<Book *> b, vector<Person *> p) {
+void bookCheckout(vector<Book *> &b, vector<Person *> &p) {
   int card, cindex;
   int book;
   bool cardFound = false; 
@@ -150,8 +173,8 @@ void bookCheckout(vector<Book *> b, vector<Person *> p) {
 }
 
 // this function allows the user to return a book by providing its id
-void bookReturn(vector<Book *> b) {
-  int book, bindex;
+void bookReturn(vector<Book *> &b) {
+  int book;
   bool bookFound = false;
 
   // searches for book
@@ -161,35 +184,18 @@ void bookReturn(vector<Book *> b) {
     if (b[i]->getBookID() == book) {
       cout << "Title: " << b[i]->getTitle() << endl;
       bookFound = true;
-      bindex = i;
+      b[i]->setPersonPtr(nullptr);
+      cout << "Return Completed" << endl;
     }
   }
   if (bookFound == false) {
     cout << "Book ID not found!" << endl;
     return;
   }
-
-  ifstream inRentals;
-  inRentals.open("rentals.txt");
-  ofstream outfile;
-  outfile.open("outfile.txt");
-  string toDelete = to_string(b[bindex]->getBookID());
-  string line;
-  while(getline(inRentals, line)) {
-    if(line.find(toDelete)) {
-      outfile << line << endl;
-    }
-  }
-  inRentals.close();
-  outfile.close();
-  remove("rentals.txt");
-  rename("outfile.txt", "rentals.txt");
-  b[bindex]->setPersonPtr(nullptr);
-  cout << "Return Completed" << endl;
 }
 
 // this function returns all available books to check out
-void viewAvailable(vector<Book *> b) {
+void viewAvailable(vector<Book *> &b) {
   bool atLeastOne = false;
   for (int i = 0; i < b.size(); i++) {
     if (b[i]->getPersonPtr() == nullptr) {
@@ -206,7 +212,8 @@ void viewAvailable(vector<Book *> b) {
   }
 }
 
-void viewBookRentals(vector<Book *> b, vector<Person *> p) {
+// this function allows you to view all outstanding book rentals
+void viewBookRentals(vector<Book *> &b) {
   bool bookFound = false;
   for (int i = 0; i < b.size(); i++) {
     if (b[i]->getPersonPtr() != nullptr) {
@@ -224,7 +231,8 @@ void viewBookRentals(vector<Book *> b, vector<Person *> p) {
   }
 }
 
-void viewCardholderRentals(vector<Book *> b, vector<Person *> p) {
+// this function allows you to view rentals for a given cardholder
+void viewCardholderRentals(vector<Book *> &b, vector<Person *> &p) {
   int id;
   cout << "Please enter the Card ID: ";
   cin >> id;
@@ -241,6 +249,66 @@ void viewCardholderRentals(vector<Book *> b, vector<Person *> p) {
         cout << "Title: " << b[i]->getTitle() << endl;
         cout << "Author: " << b[i]->getAuthor() << endl;
         cout << endl;
+      }
+    }
+  }
+}
+
+// this function creates a new card by taking in the first and last name and generating an ID
+void openNewCardholder(vector<Person *> &p) {
+  string fname, lname;
+  bool existing = false;
+  int newid;
+  cout << "Please enter the first name: ";
+  cin >> fname;
+  cout << "Please enter the last name: ";
+  cin >> lname;
+  string full = fname + " " + lname;
+  for (int i = 0; i < p.size(); i++) {
+    if (full == p[i]->fullName()) {
+      p[i]->setActive(true);
+      cout << "Card ID " << p[i]->getID() << " active" << endl;
+      cout << "Cardholder: " << p[i]->fullName() << endl;
+      existing = true;
+    }
+  } 
+  if (existing == false) {
+    newid = p[p.size()-1]->getID()+1;
+    p.emplace_back(new Person(newid, true, fname, lname));
+    cout << "Card ID " <<  p[p.size()-1]->getID() << " active" << endl;
+    cout << "Cardholder: " << p[p.size()-1]->fullName() << endl;
+  }
+}
+
+// this function closes the library card of a user by setting it as inactive and returns all rentals
+void closeLibraryCard(vector<Book *> &b, vector<Person *> &p) {
+  int id;
+  char answer;
+  bool found = false;
+  cout << "Please enter the card ID: ";
+  cin >> id;
+  for (int i = 0; i < p.size(); i++) {
+    if (id == p[i]->getID()) {
+      cout << "Cardholder: " << p[i]->fullName() << endl;
+      if (p[i]->isActive() == false) {
+        cout << "Card ID is already inactive" << endl;
+        return;
+      }
+      cout << "Are you sure you want to deactivate card? (y/n) ";
+      cin >> answer;
+      answer = tolower(answer);
+      if (answer == 'y') {
+        // returns all books the user has
+        for (int j = 0; j < b.size(); j++) {
+          if(b[j]->getPersonPtr() == p[i]) {
+            b[j]->setPersonPtr(nullptr);
+          }
+        }
+        p[i]->setActive(false);
+        cout << "Card ID deactivated" << endl;
+      }
+      else {
+        return;
       }
     }
   }
